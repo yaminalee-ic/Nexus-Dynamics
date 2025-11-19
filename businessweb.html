@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Dynamics - Future of Solutions</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom Tailwind Configuration and Base Styles */
+        :root {
+            --neon-blue: #06b6d4; /* cyan-500 */
+            --dark-bg: #030712; /* gray-950 */
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark-bg);
+            color: #e5e7eb; /* gray-200 */
+            transition: background-color 0.5s;
+        }
+
+        /* Neon Glow Effect for Key Elements */
+        .neon-glow-text {
+            text-shadow: 0 0 5px var(--neon-blue), 0 0 10px var(--neon-blue);
+        }
+
+        .neon-border {
+            border: 2px solid transparent;
+            box-shadow: 0 0 15px var(--neon-blue);
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #1f2937, #030712, #06b6d444);
+        }
+
+        /* Dynamic Scan Line Effect (for futuristic feel) */
+        .scan-line-effect {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scan-line-effect::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(6, 182, 212, 0.7), transparent);
+            animation: scanLine 8s infinite linear;
+        }
+
+        @keyframes scanLine {
+            0% { transform: translateY(0); opacity: 0.5; }
+            50% { transform: translateY(100%); opacity: 0.3; }
+            100% { transform: translateY(0); opacity: 0.5; }
+        }
+
+        /* Content Transition for Dynamic Page Switching */
+        .page-content {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+            padding-top: 2rem; /* Give space below header */
+            padding-bottom: 2rem;
+        }
+        .page-content.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .link-active {
+            color: var(--neon-blue);
+            text-shadow: 0 0 3px var(--neon-blue);
+            border-bottom: 2px solid var(--neon-blue);
+        }
+
+        /* Message Box Styling */
+        #message-box {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            padding: 1rem 1.5rem;
+            background: rgba(22, 114, 126, 0.9); /* Darker cyan */
+            color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.5);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+            font-weight: 600;
+        }
+        #message-box.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Simple Loading Spin */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .spinner {
+            display: inline-block;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--neon-blue);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Global Message Box for Button Feedback (Replaces alert()) -->
+    <div id="message-box" class="flex items-center space-x-2">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <span id="message-text">Action executed.</span>
+    </div>
+
+    <!-- Header & Navigation (Section 1) -->
+    <header class="scan-line-effect p-4 border-b border-cyan-800/30 sticky top-0 z-10 bg-gray-950/90 backdrop-blur-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <!-- Logo/Brand -->
+            <h1 class="text-3xl font-extrabold text-white">
+                <span class="neon-glow-text">NEXUS</span> DYNAMICS
+            </h1>
+            
+            <!-- Desktop Navigation -->
+            <nav class="hidden md:flex space-x-8 text-lg font-medium">
+                <a href="#home" data-page="home" class="nav-link hover:text-cyan-400 transition duration-300 p-2 rounded-lg">Home</a>
+                <a href="#about" data-page="about" class="nav-link hover:text-cyan-400 transition duration-300 p-2 rounded-lg">About Us</a>
+                <a href="#services" data-page="services" class="nav-link hover:text-cyan-400 transition duration-300 p-2 rounded-lg">Services</a>
+                <a href="#contact" data-page="contact" class="nav-link hover:text-cyan-400 transition duration-300 p-2 rounded-lg">Contact</a>
+            </nav>
+
+            <!-- Mobile Menu Button (Hamburger Icon) -->
+            <button id="mobile-menu-button" class="md:hidden text-white focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </div>
+        
+        <!-- Mobile Menu (Hidden by default) -->
+        <nav id="mobile-menu" class="md:hidden hidden pt-4 space-y-2 text-center text-lg font-medium">
+            <a href="#home" data-page="home" class="mobile-nav-link block p-3 rounded-lg hover:bg-gray-800">Home</a>
+            <a href="#about" data-page="about" class="mobile-nav-link block p-3 rounded-lg hover:bg-gray-800">About Us</a>
+            <a href="#services" data-page="services" class="mobile-nav-link block p-3 rounded-lg hover:bg-gray-800">Services</a>
+            <a href="#contact" data-page="contact" class="mobile-nav-link block p-3 rounded-lg hover:bg-gray-800">Contact</a>
+        </nav>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow container mx-auto p-4 md:p-8">
+        
+        <!-- ================= HOME PAGE (5 SECTIONS) ================= -->
+        <section id="home" class="page-content active min-h-[70vh] flex flex-col justify-center">
+            
+            <!-- Home Section 1: Hero/Welcome -->
+            <div class="mb-16 text-center">
+                <div class="max-w-5xl mx-auto p-8 rounded-xl gradient-bg shadow-2xl shadow-cyan-900/50 neon-border">
+                    <p id="dynamic-greeting" class="text-2xl md:text-3xl text-gray-400 mb-4 font-light tracking-wider opacity-0"></p>
+                    <h2 class="text-5xl md:text-7xl font-black mb-6 leading-tight">
+                        <span class="text-white">Engineering the</span> 
+                        <span class="neon-glow-text text-cyan-400">NEXT DIGITAL ERA</span>
+                    </h2>
+                    <p class="text-xl md:text-2xl text-gray-300 mb-8">
+                        We deliver quantum-leap solutions in AI integration, hyper-automation, and secure data architecture.
+                    </p>
+                    <button data-action="explore-nexus" class="action-button inline-block px-8 py-3 text-lg font-semibold rounded-full bg-cyan-600 text-gray-900 hover:bg-cyan-400 transition duration-300 shadow-lg shadow-cyan-600/50">
+                        Initiate Exploration
+                    </button>
+                </div>
+            </div>
+
+            <!-- Home Section 2: Core Pillars/Quick Links -->
+            <div class="mb-16">
+                <h3 class="text-3xl font-bold text-center mb-8">Core Operational Pillars</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="p-6 bg-gray-900 rounded-lg shadow-xl border-t border-cyan-500/50">
+                        <h4 class="text-xl font-semibold text-cyan-400 mb-3">Predictive AI</h4>
+                        <p class="text-gray-400 mb-4">Leveraging deep learning for market foresight.</p>
+                        <button data-action="read-ai" class="action-button text-sm font-medium text-cyan-400 hover:text-white transition duration-200">
+                            View Data Stream &rarr;
+                        </button>
+                    </div>
+                    <div class="p-6 bg-gray-900 rounded-lg shadow-xl border-t border-cyan-500/50">
+                        <h4 class="text-xl font-semibold text-cyan-400 mb-3">Distributed Ledger</h4>
+                        <p class="text-gray-400 mb-4">Ensuring total trust and immutable records.</p>
+                        <button data-action="read-ledger" class="action-button text-sm font-medium text-cyan-400 hover:text-white transition duration-200">
+                            View Data Stream &rarr;
+                        </button>
+                    </div>
+                    <div class="p-6 bg-gray-900 rounded-lg shadow-xl border-t border-cyan-500/50">
+                        <h4 class="text-xl font-semibold text-cyan-400 mb-3">Scalable Compute</h4>
+                        <p class="text-gray-400 mb-4">Infinitely scalable, high-performance computing.</p>
+                        <button data-action="read-compute" class="action-button text-sm font-medium text-cyan-400 hover:text-white transition duration-200">
+                            View Data Stream &rarr;
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Home Section 3: Data Pulse/Live Metrics -->
+            <div class="mb-16">
+                <h3 class="text-3xl font-bold text-center mb-8">Live System Data Pulse</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                    <div class="p-4 bg-gray-800 rounded-lg neon-border-sm">
+                        <div class="text-4xl font-mono text-cyan-400">99.99%</div>
+                        <p class="text-gray-400 text-sm">Uptime Protocol</p>
+                    </div>
+                    <div class="p-4 bg-gray-800 rounded-lg neon-border-sm">
+                        <div class="text-4xl font-mono text-cyan-400">1.2 Peta</div>
+                        <p class="text-gray-400 text-sm">Data Transferred</p>
+                    </div>
+                    <div class="p-4 bg-gray-800 rounded-lg neon-border-sm">
+                        <div class="text-4xl font-mono text-cyan-400">32 ms</div>
+                        <p class="text-gray-400 text-sm">Average Latency</p>
+                    </div>
+                    <div class="p-4 bg-gray-800 rounded-lg neon-border-sm">
+                        <div class="text-4xl font-mono text-cyan-400">74</div>
+                        <p class="text-gray-400 text-sm">Active Zones</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Home Section 4: Client Trust Logos -->
+            <div class="mb-16 text-center">
+                <h3 class="text-2xl font-semibold text-gray-500 mb-6">Trusted by the Digital Elite:</h3>
+                <div class="flex flex-wrap justify-center items-center gap-8 opacity-70">
+                    <p class="text-3xl font-serif">AeroCorp</p>
+                    <p class="text-3xl font-sans">MetaBank</p>
+                    <p class="text-3xl font-mono text-cyan-400">Q-Secure</p>
+                    <p class="text-3xl font-serif">AetherTel</p>
+                    <p class="text-3xl font-sans">BioGen</p>
+                </div>
+            </div>
+
+            <!-- Home Section 5: Call to Action for Consultation -->
+            <div class="text-center p-8 bg-cyan-900/30 rounded-xl neon-border">
+                <h3 class="text-3xl font-bold text-white mb-4">Ready to Transcend?</h3>
+                <p class="text-lg text-gray-300 mb-6">Schedule a direct link with our Chief Strategist to design your custom future blueprint.</p>
+                <a href="#contact" data-page="contact" class="action-button inline-block px-8 py-3 text-lg font-semibold rounded-full bg-cyan-600 text-gray-900 hover:bg-cyan-400 transition duration-300 shadow-lg shadow-cyan-600/50">
+                    Initiate Consultation
+                </a>
+            </div>
+            
+        </section>
+
+        <!-- ================= ABOUT PAGE (6 SECTIONS) ================= -->
+        <section id="about" class="page-content hidden">
+            
+            <!-- About Section 1: Core Directive/History -->
+            <div class="mb-12">
+                <h2 class="text-4xl md:text-5xl font-bold neon-glow-text text-cyan-400 mb-8 border-b-2 border-cyan-800 pb-2">Our Core Directive</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 text-lg space-y-6">
+                        <p>
+                            Founded on the principle of anticipatory innovation, Nexus Dynamics is not just a technology provider—we are **architects of tomorrow's infrastructure**. We began with a single mission: to dissolve the barriers between current capability and future possibility. Our team is composed of leading minds in decentralized computing, complex system modeling, and cognitive engineering.
+                        </p>
+                        <p>
+                            We operate from a philosophy of absolute transparency and relentless evolution. Our operational model is designed to scale exponentially, ensuring that our clients are always equipped with solutions that are not merely up-to-date, but actively define the frontier of their industry.
+                        </p>
+                    </div>
+                    <div class="lg:col-span-1 p-6 bg-gray-800/50 rounded-xl neon-border">
+                        <h3 class="text-2xl font-semibold text-white mb-4">Metrics at a Glance</h3>
+                        <ul class="space-y-3 text-gray-300">
+                            <li class="flex justify-between items-center border-b border-gray-700/50 pb-1">Projects Launched: <span class="text-cyan-400 font-mono">420+</span></li>
+                            <li class="flex justify-between items-center border-b border-gray-700/50 pb-1">Years of Operation: <span class="text-cyan-400 font-mono">15 Cycles</span></li>
+                            <li class="flex justify-between items-center">Client Retention: <span class="text-cyan-400 font-mono">98.5%</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- About Section 2: Leadership & Team -->
+            <div class="mb-12">
+                <h3 class="text-3xl font-bold text-white mb-6 border-b border-gray-700 pb-2">Central Command Unit (Leadership)</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="p-4 text-center bg-gray-900/50 rounded-lg">
+                        <img src="https://placehold.co/100x100/1e293b/a5f3fc?text=L1" class="rounded-full mx-auto mb-3 neon-border-sm" onerror="this.src='https://placehold.co/100x100/1e293b/a5f3fc?text=L1'" alt="Team Member 1">
+                        <p class="font-semibold text-cyan-400">Dr. A. Z. Kael</p>
+                        <p class="text-sm text-gray-400 mb-3">Chief Architect</p>
+                        <button data-action="view-profile-kael" class="action-button text-xs bg-cyan-600/20 text-cyan-300 px-3 py-1 rounded hover:bg-cyan-600/40">
+                            View Profile
+                        </button>
+                    </div>
+                    <div class="p-4 text-center bg-gray-900/50 rounded-lg">
+                        <img src="https://placehold.co/100x100/1e293b/a5f3fc?text=L2" class="rounded-full mx-auto mb-3 neon-border-sm" onerror="this.src='https://placehold.co/100x100/1e293b/a5f3fc?text=L2'" alt="Team Member 2">
+                        <p class="font-semibold text-cyan-400">J. R. Samos</p>
+                        <p class="text-sm text-gray-400 mb-3">Head of Quantum</p>
+                        <button data-action="view-profile-samos" class="action-button text-xs bg-cyan-600/20 text-cyan-300 px-3 py-1 rounded hover:bg-cyan-600/40">
+                            View Profile
+                        </button>
+                    </div>
+                    <!-- Add two more team members here for visual completeness (4 total) -->
+                     <div class="p-4 text-center bg-gray-900/50 rounded-lg">
+                        <img src="https://placehold.co/100x100/1e293b/a5f3fc?text=L3" class="rounded-full mx-auto mb-3 neon-border-sm" onerror="this.src='https://placehold.co/100x100/1e293b/a5f3fc?text=L3'" alt="Team Member 3">
+                        <p class="font-semibold text-cyan-400">Dr. E. V. Tiris</p>
+                        <p class="text-sm text-gray-400 mb-3">Chief Data Officer</p>
+                        <button data-action="view-profile-tiris" class="action-button text-xs bg-cyan-600/20 text-cyan-300 px-3 py-1 rounded hover:bg-cyan-600/40">
+                            View Profile
+                        </button>
+                    </div>
+                    <div class="p-4 text-center bg-gray-900/50 rounded-lg">
+                        <img src="https://placehold.co/100x100/1e293b/a5f3fc?text=L4" class="rounded-full mx-auto mb-3 neon-border-sm" onerror="this.src='https://placehold.co/100x100/1e293b/a5f3fc?text=L4'" alt="Team Member 4">
+                        <p class="font-semibold text-cyan-400">A. K. Viridian</p>
+                        <p class="text-sm text-gray-400 mb-3">Operations Director</p>
+                        <button data-action="view-profile-viridian" class="action-button text-xs bg-cyan-600/20 text-cyan-300 px-3 py-1 rounded hover:bg-cyan-600/40">
+                            View Profile
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- About Section 3: Core Values Protocol -->
+            <div class="mb-12 p-8 bg-gray-900/70 rounded-xl neon-border-sm">
+                <h3 class="text-3xl font-bold text-white mb-6 border-b border-gray-700 pb-2">The Nexus Values Protocol</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                    <div>
+                        <p class="text-xl font-bold text-cyan-400">Integrity</p>
+                        <p class="text-gray-400 text-sm">Absolute Transparency</p>
+                    </div>
+                    <div>
+                        <p class="text-xl font-bold text-cyan-400">Evolution</p>
+                        <p class="text-gray-400 text-sm">Relentless Adaptation</p>
+                    </div>
+                    <div>
+                        <p class="text-xl font-bold text-cyan-400">Foresight</p>
+                        <p class="text-gray-400 text-sm">Anticipatory Design</p>
+                    </div>
+                    <div>
+                        <p class="text-xl font-bold text-cyan-400">Synergy</p>
+                        <p class="text-gray-400 text-sm">Collaborative Mastery</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- About Section 4: Technology Nexus Overview -->
+            <div class="mb-12">
+                <h3 class="text-3xl font-bold text-white mb-6 border-b border-gray-700 pb-2">Technological Edge</h3>
+                <p class="text-lg text-gray-400 mb-6">Our proprietary toolset is built on foundational advancements in these four critical fields.</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div class="p-5 bg-gray-800 rounded-lg border-l-4 border-cyan-500">
+                        <h4 class="text-xl font-semibold text-white">Cognitive Processing</h4>
+                        <p class="text-gray-400">Next-gen neural nets for real-time decision making.</p>
+                    </div>
+                    <div class="p-5 bg-gray-800 rounded-lg border-l-4 border-cyan-500">
+                        <h4 class="text-xl font-semibold text-white">Zero-Trust Frameworks</h4>
+                        <p class="text-gray-400">Security architecture where trust is never assumed.</p>
+                    </div>
+                    <div class="p-5 bg-gray-800 rounded-lg border-l-4 border-cyan-500">
+                        <h4 class="text-xl font-semibold text-white">Spatio-Temporal Data Modeling</h4>
+                        <p class="text-gray-400">Advanced analysis of data across time and space.</p>
+                    </div>
+                    <div class="p-5 bg-gray-800 rounded-lg border-l-4 border-cyan-500">
+                        <h4 class="text-xl font-semibold text-white">Edge Computing</h4>
+                        <p class="text-gray-400">Processing power deployed where it is needed most.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- About Section 5: Global Presence Map (Simulated) -->
+             <div class="mb-12">
+                <h3 class="text-3xl font-bold text-white mb-6 border-b border-gray-700 pb-2">Global Operational Zones</h3>
+                <div class="p-8 bg-gray-900 rounded-xl neon-border-sm text-center">
+                    <p class="text-gray-400 mb-4">Displaying holographic projection of Nexus infrastructure (Simulated Map Graphic)</p>
+                    <div class="h-40 bg-gray-950 border border-cyan-600/50 flex items-center justify-center text-cyan-400 text-2xl font-mono">
+                        [GLOBAL NETWORK STATUS: ONLINE]
+                    </div>
+                    <p class="text-sm mt-3 text-gray-500">Major Hubs: New Terra, Mars Station Alpha, Kepler-186f Relay</p>
+                </div>
+            </div>
+
+            <!-- About Section 6: Awards and Recognition -->
+            <div class="p-8 bg-cyan-900/20 rounded-xl">
+                <h3 class="text-3xl font-bold text-white mb-6 border-b border-cyan-700 pb-2">Certifications & Honors</h3>
+                <ul class="list-disc list-inside space-y-2 text-lg text-gray-300 ml-4">
+                    <li>Certified Quantum Readiness Provider (QRP-2075)</li>
+                    <li>Galactic Chamber of Commerce Innovation Award (Year 12)</li>
+                    <li>Top-Tier Decentralization Auditor (TDA)</li>
+                    <li>AetherNet Security Compliance: Level Alpha</li>
+                </ul>
+                <button data-action="download-cert" class="action-button mt-6 text-sm bg-cyan-600/20 text-cyan-300 px-4 py-2 rounded-lg hover:bg-cyan-600/40 transition">
+                    Download Certification Log
+                </button>
+            </div>
+
+        </section>
+
+        <!-- ================= SERVICES PAGE (6 SECTIONS) ================= -->
+        <section id="services" class="page-content hidden">
+            
+            <!-- Services Section 1: Solution Ecosystem Overview -->
+            <div class="mb-12">
+                <h2 class="text-4xl md:text-5xl font-bold neon-glow-text text-cyan-400 mb-8 border-b-2 border-cyan-800 pb-2">Our Solution Ecosystem</h2>
+                <p class="text-lg text-gray-300 mb-8">We offer three primary solution sets, each designed to optimize specific aspects of your future infrastructure.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    
+                    <!-- Service Card 1 -->
+                    <div class="p-6 bg-gray-800/50 rounded-xl shadow-lg hover:shadow-cyan-500/30 transition duration-300 neon-border-sm">
+                        <svg class="w-10 h-10 text-cyan-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v14c-1.105 0-2 .895-2 2s.895 2 2 2h3m-5 3v-3m12-5v-3m-6 0h.01M16 16v-2m4 0v2m0 0h.01M4 19h16"></path></svg>
+                        <h3 class="text-2xl font-semibold text-white mb-3">Hyper-Automation</h3>
+                        <p class="text-gray-400">Integrating cognitive bots and machine learning for unprecedented efficiency gains.</p>
+                    </div>
+
+                    <!-- Service Card 2 -->
+                    <div class="p-6 bg-gray-800/50 rounded-xl shadow-lg hover:shadow-cyan-500/30 transition duration-300 neon-border-sm">
+                        <svg class="w-10 h-10 text-cyan-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"></path></svg>
+                        <h3 class="text-2xl font-semibold text-white mb-3">Decentralized Architecture</h3>
+                        <p class="text-gray-400">Building secure, immutable data structures (Blockchain/DLT) for total transactional trust.</p>
+                    </div>
+                    
+                    <!-- Service Card 3 -->
+                    <div class="p-6 bg-gray-800/50 rounded-xl shadow-lg hover:shadow-cyan-500/30 transition duration-300 neon-border-sm">
+                        <svg class="w-10 h-10 text-cyan-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        <h3 class="text-2xl font-semibold text-white mb-3">Quantum-Grade Security</h3>
+                        <p class="text-gray-400">Future-proofing your assets with post-quantum cryptography and biometric layers.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Services Section 2: Deep Dive 1 - Hyper-Automation -->
+            <div class="mb-12 p-8 bg-gray-900/70 rounded-xl neon-border-sm">
+                <h3 class="text-3xl font-bold text-white mb-4">Hyper-Automation: The Zero-Manual-Workforce</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-300 ml-4 mb-6">
+                    <li>**Cognitive Bot Deployment:** AI-driven agents managing routine tasks.</li>
+                    <li>**Process Mining & Optimization:** Identifying and eliminating workflow bottlenecks.</li>
+                    <li>**Multi-System API Integration:** Seamless data flow across disparate platforms.</li>
+                </ul>
+                <button data-action="start-automation-pilot" class="action-button px-6 py-2 text-sm font-semibold rounded-full bg-cyan-600 text-gray-900 hover:bg-cyan-400 transition">
+                    Start Pilot Program
+                </button>
+            </div>
+
+            <!-- Services Section 3: Deep Dive 2 - Decentralized Architecture -->
+            <div class="mb-12 p-8 bg-gray-900/70 rounded-xl neon-border-sm">
+                <h3 class="text-3xl font-bold text-white mb-4">Decentralized Architecture: Total Data Sovereignty</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-300 ml-4 mb-6">
+                    <li>**Custom DLT Design:** Tailored blockchain solutions for supply chain or finance.</li>
+                    <li>**Smart Contract Engineering:** Automated, trustless agreement execution.</li>
+                    <li>**Immutable Record Keeping:** Data that cannot be altered or corrupted.</li>
+                </ul>
+                <button data-action="request-audit" class="action-button px-6 py-2 text-sm font-semibold rounded-full bg-cyan-600 text-gray-900 hover:bg-cyan-400 transition">
+                    Request Architecture Audit
+                </button>
+            </div>
+
+            <!-- Services Section 4: Deep Dive 3 - Quantum Security -->
+            <div class="mb-12 p-8 bg-gray-900/70 rounded-xl neon-border-sm">
+                <h3 class="text-3xl font-bold text-white mb-4">Quantum-Grade Security: Future-Proofing Assets</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-300 ml-4 mb-6">
+                    <li>**Post-Quantum Cryptography (PQC):** Defenses against future quantum decryption.</li>
+                    <li>**Biometric & Multi-Factor Access:** Layered identity verification.</li>
+                    <li>**Threat Anticipation Systems:** Predictive analysis of digital vulnerabilities.</li>
+                </ul>
+                <button data-action="secure-data" class="action-button px-6 py-2 text-sm font-semibold rounded-full bg-cyan-600 text-gray-900 hover:bg-cyan-400 transition">
+                    Secure My Data Now
+                </button>
+            </div>
+
+            <!-- Services Section 5: Engagement Models (Pricing Tiers) -->
+            <div class="mb-12">
+                <h3 class="text-3xl font-bold text-white mb-6 border-b border-gray-700 pb-2">Engagement Models</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                    <div class="p-6 bg-gray-800 rounded-xl neon-border-sm">
+                        <h4 class="text-2xl font-bold text-cyan-400 mb-2">Tier Alpha</h4>
+                        <p class="text-sm text-gray-400 mb-4">Project-based, focused deployment.</p>
+                        <p class="text-4xl font-mono text-white mb-4">Standard Rate</p>
+                        <button data-action="select-tier-alpha" class="action-button w-full py-2 bg-gray-700 text-cyan-400 rounded-lg hover:bg-gray-600 transition">
+                            Select Alpha
+                        </button>
+                    </div>
+                    <div class="p-6 bg-gray-800 rounded-xl neon-border">
+                        <h4 class="text-2xl font-bold text-white mb-2">Tier Beta (Recommended)</h4>
+                        <p class="text-sm text-gray-400 mb-4">Full-spectrum partnership & consulting.</p>
+                        <p class="text-4xl font-mono neon-glow-text text-cyan-400 mb-4">Custom Quote</p>
+                        <button data-action="select-tier-beta" class="action-button w-full py-2 bg-cyan-600 text-gray-900 rounded-lg hover:bg-cyan-400 transition">
+                            Select Beta
+                        </button>
+                    </div>
+                    <div class="p-6 bg-gray-800 rounded-xl neon-border-sm">
+                        <h4 class="text-2xl font-bold text-cyan-400 mb-2">Tier Gamma</h4>
+                        <p class="text-sm text-gray-400 mb-4">24/7 Monitoring and Emergency Response.</p>
+                        <p class="text-4xl font-mono text-white mb-4">Retainer Only</p>
+                        <button data-action="select-tier-gamma" class="action-button w-full py-2 bg-gray-700 text-cyan-400 rounded-lg hover:bg-gray-600 transition">
+                            Select Gamma
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Services Section 6: Direct Consultation Link -->
+            <div class="text-center p-8 bg-cyan-900/30 rounded-xl neon-border">
+                <h3 class="text-3xl font-bold text-white mb-4">Need a Custom Synthesis?</h3>
+                <p class="text-lg text-gray-300 mb-6">Our solutions are modular. Contact us to build a unique deployment profile.</p>
+                <a href="#contact" data-page="contact" class="action-button inline-block px-8 py-3 text-lg font-semibold rounded-full bg-cyan-600 text-gray-900 hover:bg-cyan-400 transition duration-300 shadow-lg shadow-cyan-600/50">
+                    Design My Profile
+                </a>
+            </div>
+
+        </section>
+
+        <!-- ================= CONTACT PAGE (3 SECTIONS) ================= -->
+        <section id="contact" class="page-content hidden">
+            
+            <!-- Contact Section 1: Contact Form -->
+            <div class="mb-12">
+                <h2 class="text-4xl md:text-5xl font-bold neon-glow-text text-cyan-400 mb-8 border-b-2 border-cyan-800 pb-2">Initiate Contact Protocol</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    
+                    <!-- Contact Form Container -->
+                    <div class="p-8 bg-gray-800/50 rounded-xl neon-border shadow-2xl">
+                        <h3 class="text-3xl font-bold mb-6 text-white">Send Transmission</h3>
+                        <form id="contact-form" class="space-y-6">
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-gray-400 mb-2">Designation / Name</label>
+                                <input type="text" id="name" name="name" class="w-full px-4 py-3 bg-gray-900 border border-cyan-700 rounded-lg focus:ring-cyan-500 focus:border-cyan-500 placeholder-gray-500 text-white" placeholder="John Doe" required>
+                            </div>
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-400 mb-2">Encrypted Channel / Email</label>
+                                <input type="email" id="email" name="email" class="w-full px-4 py-3 bg-gray-900 border border-cyan-700 rounded-lg focus:ring-cyan-500 focus:border-cyan-500 placeholder-gray-500 text-white" placeholder="user@domain.com" required>
+                            </div>
+                            <div>
+                                <label for="message" class="block text-sm font-medium text-gray-400 mb-2">Message Payload</label>
+                                <textarea id="message" name="message" rows="5" class="w-full px-4 py-3 bg-gray-900 border border-cyan-700 rounded-lg focus:ring-cyan-500 focus:border-cyan-500 placeholder-gray-500 text-white" placeholder="Describe your future-state requirements..." required></textarea>
+                            </div>
+                            <button type="submit" class="w-full px-6 py-3 text-lg font-semibold rounded-full bg-cyan-600 text-gray-900 hover:bg-cyan-400 transition duration-300 shadow-lg shadow-cyan-600/50">
+                                Send Transmission
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Contact Info Container (Contact Section 2) -->
+                    <div class="space-y-8 p-8">
+                        <h3 class="text-3xl font-bold mb-4 text-white">Central Hub Coordinates</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <svg class="w-6 h-6 text-cyan-400 mr-4 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                <div>
+                                    <p class="text-lg font-semibold">Physical Coordinate</p>
+                                    <p class="text-gray-400">Sector Delta-9, Global Innovation Zone, Terra</p>
+                                    <button data-action="locate-hub" class="action-button text-sm text-cyan-400 hover:underline">
+                                        Pin Location
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <svg class="w-6 h-6 text-cyan-400 mr-4 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m-2-3a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5z"></path></svg>
+                                <div>
+                                    <p class="text-lg font-semibold">Support Channel</p>
+                                    <p class="text-gray-400">contact@nexusdynamics.io</p>
+                                    <button data-action="copy-email" class="action-button text-sm text-cyan-400 hover:underline">
+                                        Copy Address
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Section 3: Support Nexus/FAQ -->
+            <div class="p-8 bg-gray-900/70 rounded-xl neon-border-sm">
+                <h3 class="text-3xl font-bold text-white mb-6 border-b border-gray-700 pb-2">Support Nexus & FAQs</h3>
+                
+                <!-- FAQ Item 1 -->
+                <div class="mb-4 border-b border-gray-800 pb-4">
+                    <h4 class="text-xl font-semibold text-cyan-400 cursor-pointer faq-toggle">
+                        What is Hyper-Automation?
+                    </h4>
+                    <p class="text-gray-400 mt-2 faq-content hidden">
+                        Hyper-Automation involves end-to-end automation of processes beyond robotic process automation (RPA), combining AI, machine learning, and advanced analytics.
+                    </p>
+                </div>
+                
+                <!-- FAQ Item 2 -->
+                <div class="mb-4 border-b border-gray-800 pb-4">
+                    <h4 class="text-xl font-semibold text-cyan-400 cursor-pointer faq-toggle">
+                       Are your solutions compatible with legacy systems?
+                    </h4>
+                    <p class="text-gray-400 mt-2 faq-content hidden">
+                        Yes, we use proprietary 'Bridge' protocols to ensure seamless, non-disruptive integration with most legacy and proprietary infrastructures.
+                    </p>
+                </div>
+
+                <!-- FAQ Item 3 -->
+                <div class="mb-4 border-b border-gray-800 pb-4">
+                    <h4 class="text-xl font-semibold text-cyan-400 cursor-pointer faq-toggle">
+                        How long does a standard deployment take?
+                    </h4>
+                    <p class="text-gray-400 mt-2 faq-content hidden">
+                        The timeline is synthesized based on complexity, but Tier Alpha projects typically initiate within 4 weeks of protocol sign-off.
+                    </p>
+                </div>
+                
+                <button data-action="open-support-ticket" class="action-button mt-6 px-6 py-2 text-lg font-semibold rounded-full bg-cyan-600 text-gray-900 hover:bg-cyan-400 transition duration-300">
+                    Open Support Ticket
+                </button>
+            </div>
+
+        </section>
+        <!-- TOTAL SECTIONS: Home(5) + About(6) + Services(6) + Contact(3) = 20 -->
+
+    </main>
+
+    <!-- Footer (Section 20) -->
+    <footer class="p-6 text-center text-sm text-gray-500 border-t border-cyan-800/30">
+        <p>&copy; 2077 Nexus Dynamics. All Rights Reserved. // Quantum-Optimized Interface</p>
+    </footer>
+
+    <script>
+        const pages = ['home', 'about', 'services', 'contact'];
+        const contentSections = document.querySelectorAll('.page-content');
+        const navLinks = document.querySelectorAll('.nav-link, .mobile-nav-link');
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const dynamicGreetingElement = document.getElementById('dynamic-greeting');
+        const greetingText = "System Initialized. Welcome, User. Loading Nexus Data Stream...";
+        let charIndex = 0;
+
+        // Message box elements
+        const messageBox = document.getElementById('message-box');
+        const messageText = document.getElementById('message-text');
+
+        // --- Core Functions ---
+
+        /** Displays a temporary notification message */
+        function showMessage(text) {
+            messageText.textContent = text;
+            messageBox.classList.add('show');
+            console.log('UI Action Feedback:', text);
+
+            setTimeout(() => {
+                messageBox.classList.remove('show');
+            }, 3000);
+        }
+
+        /** Typing Effect for Home Page */
+        function typeWriter() {
+            if (dynamicGreetingElement) {
+                dynamicGreetingElement.classList.add('opacity-100');
+                if (charIndex < greetingText.length) {
+                    dynamicGreetingElement.textContent += greetingText.charAt(charIndex);
+                    charIndex++;
+                    setTimeout(typeWriter, 50); // Typing speed
+                }
+            }
+        }
+
+        /** Renders the specified page and handles CSS transitions. */
+        function renderPage(pageName) {
+            contentSections.forEach(section => {
+                const isActive = section.id === pageName;
+                section.classList.remove('active');
+                section.classList.add('hidden');
+                
+                if (isActive) {
+                    // Start typing effect only on home page activation
+                    if (pageName === 'home') {
+                        charIndex = 0;
+                        dynamicGreetingElement.textContent = '';
+                        setTimeout(typeWriter, 200);
+                    } else {
+                        // Ensure greeting is fully loaded if not on home page
+                        dynamicGreetingElement.textContent = greetingText;
+                        dynamicGreetingElement.classList.add('opacity-100');
+                    }
+
+                    setTimeout(() => {
+                        section.classList.remove('hidden');
+                        section.classList.add('active');
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }, 100); 
+                }
+            });
+
+            // Update active navigation link styling
+            navLinks.forEach(link => {
+                link.classList.remove('link-active');
+                if (link.dataset.page === pageName) {
+                    link.classList.add('link-active');
+                }
+            });
+        }
+
+        /** Handles all simulated button actions based on data-action attribute. */
+        function handleAction(action) {
+            let message = '';
+            console.log(`Action Triggered: ${action}`);
+            
+            switch(action) {
+                case 'explore-nexus':
+                    message = 'Initiating Sector Scan... Redirecting to Services.';
+                    renderPage('services');
+                    history.pushState(null, '', '#services');
+                    break;
+                case 'read-ai':
+                case 'read-ledger':
+                case 'read-compute':
+                    message = 'Loading detailed data stream for Core Pillar...';
+                    break;
+                case 'view-profile-kael':
+                case 'view-profile-samos':
+                case 'view-profile-tiris':
+                case 'view-profile-viridian':
+                    message = 'Accessing personnel file. Profile loaded in console.';
+                    break;
+                case 'download-cert':
+                    message = 'Certificate Log download initiated. (Simulated)';
+                    break;
+                case 'start-automation-pilot':
+                    message = 'Hyper-Automation Pilot request logged. Strategy team will initiate linkup.';
+                    break;
+                case 'request-audit':
+                    message = 'Architecture Audit requested. Our security nexus is preparing a diagnostic.';
+                    break;
+                case 'secure-data':
+                    message = 'Quantum-Grade Security deployment scheduled. Your assets are being future-proofed.';
+                    break;
+                case 'select-tier-alpha':
+                case 'select-tier-beta':
+                case 'select-tier-gamma':
+                    message = `Engagement Model ${action.split('-').pop().toUpperCase()} selected. Finalizing protocol.`;
+                    break;
+                case 'locate-hub':
+                    message = 'Physical coordinates pinned. Navigation data sent to system log.';
+                    break;
+                case 'copy-email':
+                    message = 'Support Channel copied to clipboard. (Simulated)';
+                    break;
+                case 'open-support-ticket':
+                    message = 'New Support Ticket opened. Reference: NXD-9001. Awaiting triage.';
+                    break;
+                default:
+                    message = 'Generic action triggered. No specific protocol found.';
+            }
+            showMessage(message);
+        }
+
+        // --- Event Listeners ---
+
+        // Navigation clicks
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const page = e.currentTarget.dataset.page;
+                history.pushState(null, '', `#${page}`);
+                renderPage(page);
+                
+                // Close mobile menu
+                if (mobileMenu.classList.contains('flex')) {
+                    mobileMenu.classList.add('hidden');
+                    mobileMenu.classList.remove('flex');
+                }
+            });
+        });
+
+        // Mobile menu toggle
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            mobileMenu.classList.toggle('flex');
+        });
+
+        // All general button/action clicks
+        document.addEventListener('click', (e) => {
+            const button = e.target.closest('.action-button');
+            if (button && button.dataset.action) {
+                handleAction(button.dataset.action);
+            }
+
+            // FAQ toggle
+            const faqToggle = e.target.closest('.faq-toggle');
+            if (faqToggle) {
+                const content = faqToggle.nextElementSibling;
+                content.classList.toggle('hidden');
+                faqToggle.innerHTML = content.classList.contains('hidden') ? '&rboxh; ' + faqToggle.textContent.substring(2) : '&rboxd; ' + faqToggle.textContent.substring(2);
+            }
+        });
+
+        // Contact form submission
+        document.getElementById('contact-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const submitButton = e.target.querySelector('button[type="submit"]');
+            
+            // Check required fields (basic validation)
+            if (!e.target.checkValidity()) {
+                showMessage('Input error. Please complete all required fields.');
+                return;
+            }
+
+            // Simulate loading state
+            const originalText = submitButton.textContent;
+            submitButton.innerHTML = `<span class="spinner"></span> Transmission In Progress...`;
+            submitButton.disabled = true;
+
+            setTimeout(() => {
+                showMessage('Transmission received! Confirmation signal sent to your encrypted channel.');
+                
+                // Reset form and button
+                submitButton.textContent = originalText;
+                submitButton.disabled = false;
+                e.target.reset(); 
+            }, 3000);
+        });
+
+
+        // Handle browser back/forward and initial load
+        window.addEventListener('popstate', () => {
+            const hash = window.location.hash.substring(1) || 'home';
+            if (pages.includes(hash)) {
+                renderPage(hash);
+            }
+        });
+
+        // Initialize the website on load
+        window.onload = () => {
+            const initialHash = window.location.hash.substring(1);
+            const initialPage = pages.includes(initialHash) ? initialHash : 'home';
+            renderPage(initialPage);
+        };
+    </script>
+</body>
+</html>
